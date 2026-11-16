@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vow &amp; Venom</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f3efe8;--fg:#14120f;--muted:#6a645b;--line:#d9d1c4;--accent:#9a7a2c;--card:#fbf8f2}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+@media (prefers-color-scheme:dark){:root{--bg:#100f0d;--fg:#f1ece3;--muted:#a1998c;--line:#2e2a25;--accent:#c9a961;--card:#191714;color-scheme:dark}}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:Georgia,"Times New Roman",serif;line-height:1.6;text-align:center}
+a{color:inherit}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.wrap{max-width:980px;margin:0 auto;padding:0 max(22px,env(safe-area-inset-left,0px)) 0 max(22px,env(safe-area-inset-right,0px))}
+.eyebrow,nav,.tag,.btn,.small,.day span,.price small{font-family:system-ui,-apple-system,sans-serif}
+.top{padding:10px 0;font:11px system-ui,sans-serif;letter-spacing:.22em;text-transform:uppercase;border-bottom:1px solid var(--line);color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 22px;justify-content:center;padding:20px 0;font-size:12px;letter-spacing:.18em;text-transform:uppercase}
+nav a{text-decoration:none}
+nav a:hover{color:var(--accent)}
+.logo{width:100%;font:700 15px/1 system-ui,sans-serif;letter-spacing:.3em;margin-bottom:6px}
+.eyebrow{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);margin-bottom:18px}
+.hero{padding:72px 0 64px}
+h1{font-weight:400;font-size:clamp(44px,11vw,96px);line-height:1;margin:0 auto 22px;letter-spacing:-.02em}
+h1 em{color:var(--accent)}
+h2{font-weight:400;font-size:clamp(26px,5vw,40px);line-height:1.15;margin:0 auto 20px;max-width:18em}
+.lede{max-width:34em;margin:0 auto 30px;color:var(--muted);font-size:18px}
+.btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-block;padding:14px 22px;border:1px solid var(--fg);background:var(--fg);color:var(--bg);font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:opacity .2s}
+.btn:hover{opacity:.82}
+.btn.alt{background:transparent;color:var(--fg)}
+section{padding:64px 0;border-top:1px solid var(--line)}
+.p{max-width:36em;margin:0 auto;color:var(--muted);font-size:17px}
+.tag{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:12px}
+.todo{font:11px system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-top:10px;opacity:.75}
+h3{font-weight:400;font-size:21px;margin:4px 0 0}
+
+/* Dance */
+.days{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);max-width:640px;margin:34px auto 30px}
+.day{background:var(--card);padding:20px 10px}
+.day b{display:block;font-weight:400;font-size:22px}
+.day span{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:720px;margin:0 auto}
+.option{background:var(--card);border:1px solid var(--line);padding:28px 22px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.option p{margin:0;color:var(--muted);font-size:16px}
+
+/* Prints */
+.art img{width:100%;height:100%;object-fit:cover;display:block}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin:34px 0}
+@media (max-width:980px){.grid{grid-template-columns:repeat(2,1fr)}}
+.print{display:block}
+.print-link{text-decoration:none;display:block;cursor:zoom-in;width:100%;background:none;border:0;padding:0;margin:0;color:inherit;font:inherit;text-align:center}
+.print-actions{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:16px}
+.story-btn{background:none;border:0;border-bottom:1px solid var(--line);color:var(--muted);font:11px system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;padding:4px 0;cursor:pointer}
+.story-btn:hover{color:var(--accent);border-color:var(--accent)}
+.frame{background:var(--card);border:1px solid var(--line);padding:14px;transition:border-color .25s,transform .25s}
+.print-link:hover .frame{border-color:var(--accent);transform:translateY(-3px)}
+.art{background:#fff;overflow:hidden;aspect-ratio:210/297;display:grid;place-items:center;font:12px system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.75)}
+.price-line{font:13px system-ui,sans-serif;letter-spacing:.12em;color:var(--accent);margin-top:4px}
+.print p:empty{display:none}
+.print p{margin:6px auto 0;color:var(--muted);font-size:15px;max-width:16em}
+
+/* Tarot */
+.reading{background:var(--card);border:1px solid var(--line);max-width:560px;margin:34px auto 0;padding:34px 26px}
+.price{font-size:clamp(32px,7vw,44px);line-height:1.1}
+.price small{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-left:6px}
+.spreads{list-style:none;padding:0;margin:26px 0;display:grid;gap:0}
+.spreads li{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding:12px 0;font-size:18px}
+.spreads li:last-child{border-bottom:1px solid var(--line)}
+.spreads li{align-items:center;text-align:left}
+.spreads li span{display:block;font:13px system-ui,sans-serif;color:var(--muted)}
+.spreads .book{display:flex;flex-direction:column;align-items:flex-end;gap:0}
+.spreads .book .todo{margin-top:6px;font-size:10px}
+.sp-price{font:500 13px system-ui,sans-serif;font-style:normal;letter-spacing:.1em;color:var(--accent);margin-left:8px}
+.spreads .btn{padding:11px 18px}
+button.btn{cursor:pointer;font-family:system-ui,-apple-system,sans-serif}
+.avail{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:22px 0 10px}
+.avail b{font:500 11px system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;border:1px solid var(--accent);color:var(--accent);padding:6px 12px;border-radius:2px}
+
+footer{padding:48px 0 56px;border-top:1px solid var(--line)}
+.fl{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin:18px 0;font:12px system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase}
+.fl a{text-decoration:none}
+.fl a:hover{color:var(--accent)}
+.small{font-size:12px;color:var(--muted);margin-top:12px}
+
+@media (prefers-reduced-motion:no-preference){
+  .ready .hero>*:not(canvas){animation:rise .9s ease both}
+  .ready .hero>*:nth-child(3){animation-delay:.12s}
+  .ready .hero>*:nth-child(4){animation-delay:.24s}
+  .ready .hero>*:nth-child(5){animation-delay:.36s}
+  .ready .hero>*:nth-child(6){animation-delay:.5s}
+  .js:not(.ready) .hero>*:not(canvas){opacity:.001}
+  #bloom path{stroke-dasharray:200;stroke-dashoffset:200;animation:draw 1.6s ease forwards}
+  #bloom path:nth-child(2){animation-delay:.12s}#bloom path:nth-child(3){animation-delay:.24s}
+  #bloom path:nth-child(4){animation-delay:.36s}#bloom path:nth-child(5){animation-delay:.48s}
+  #bloom path:nth-child(6){animation-delay:.6s}
+  #bloom{animation:spin 6s linear infinite}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes rise{from{transform:translateY(14px);opacity:.001}to{transform:none;opacity:1}}
+}
+/* ---------- Intro ---------- */
+#intro{position:fixed;inset:0;z-index:100;background:#0d0c0a;color:#f1ece3;display:grid;place-items:center;transition:clip-path 1.1s cubic-bezier(.77,0,.18,1)}
+#intro[hidden]{display:none}
+#intro.gone{clip-path:inset(0 0 100% 0)}
+#intro .in{display:flex;flex-direction:column;align-items:center;gap:22px}
+#bloom{width:140px;height:140px;overflow:visible}
+#bloom path{fill:none;stroke:#c9a961;stroke-width:1.2;stroke-linecap:round}
+#bloom circle{fill:#c9a961}
+#intro .word{font:700 clamp(22px,5vw,34px)/1 system-ui,sans-serif;letter-spacing:.34em;padding-left:.34em;min-height:1em}
+#intro .sub{font:11px system-ui,sans-serif;letter-spacing:.3em;text-transform:uppercase;color:#a1998c;opacity:0;transition:opacity .6s}
+#intro .sub.on{opacity:1}
+#skip{position:absolute;bottom:max(26px,env(safe-area-inset-bottom,0px));right:26px;background:none;border:1px solid #2e2a25;color:#a1998c;font:11px system-ui,sans-serif;letter-spacing:.2em;text-transform:uppercase;padding:9px 14px;cursor:pointer;border-radius:2px}
+#skip:hover{color:#f1ece3;border-color:#a1998c}
+
+/* ---------- Cursor ---------- */
+.cur-dot,.cur-ring{position:fixed;left:0;top:0;pointer-events:none;z-index:90;border-radius:50%;opacity:0;transition:opacity .3s}
+.cur-dot{width:6px;height:6px;margin:-3px 0 0 -3px;background:var(--accent)}
+.cur-ring{width:34px;height:34px;margin:-17px 0 0 -17px;border:1px solid var(--accent);transition:opacity .3s,width .25s,height .25s,margin .25s,background .25s}
+.cur-ring.big{width:64px;height:64px;margin:-32px 0 0 -32px;background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.has-cursor .cur-dot,.has-cursor .cur-ring{opacity:1}
+
+/* ---------- Hero glow + vine canvas ---------- */
+.hero{position:relative}
+#vines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.55}
+.hero>*:not(canvas){position:relative;z-index:1}
+.glow{position:fixed;width:520px;height:520px;margin:-260px 0 0 -260px;left:0;top:0;border-radius:50%;pointer-events:none;z-index:0;
+  background:radial-gradient(circle,color-mix(in srgb,var(--accent) 14%,transparent),transparent 65%);opacity:0;transition:opacity .6s}
+.has-cursor .glow{opacity:1}
+.wrap,.top{position:relative;z-index:1}
+
+/* ---------- Scroll reveal + tilt ---------- */
+.js .reveal{opacity:.001;transform:translateY(18px);transition:opacity .9s ease,transform .9s ease}
+.js .reveal.seen{opacity:1;transform:none}
+.print .frame{transform-style:preserve-3d;will-change:transform}
+
+/* ---------- Gold ornaments ---------- */
+.orn{display:block;width:min(260px,70%);height:auto;margin:0 auto 26px;overflow:visible}
+.orn path{fill:none;stroke:var(--accent);stroke-width:1;stroke-linecap:round}
+.orn circle{fill:var(--accent)}
+@media (prefers-reduced-motion:no-preference){
+  .js .orn path{stroke-dasharray:300;stroke-dashoffset:300;transition:stroke-dashoffset 2.2s ease}
+  .js .orn.seen path,.js .seen .orn path{stroke-dashoffset:0}
+}
+.frame{position:relative}
+.frame::before,.frame::after{content:"";position:absolute;width:18px;height:18px;border:1px solid var(--accent);pointer-events:none;opacity:.8}
+.frame::before{top:-5px;left:-5px;border-right:0;border-bottom:0}
+.frame::after{bottom:-5px;right:-5px;border-left:0;border-top:0}
+.day b::after{content:"✳";display:block;font-size:10px;color:var(--accent);margin-top:4px}
+
+/* ---------- Tonight status ---------- */
+.status{display:inline-flex;align-items:center;gap:10px;margin-top:28px;padding:9px 16px;border:1px solid var(--line);border-radius:999px;font:12px system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-decoration:none;background:var(--card)}
+.status i{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 var(--accent)}
+.status.live{color:var(--fg);border-color:var(--accent)}
+.status.live:hover{color:var(--accent)}
+.status.off i{background:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.status.live i{animation:pulse 2s ease-out infinite}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 60%,transparent)}100%{box-shadow:0 0 0 10px transparent}}
+.day.today{outline:1px solid var(--accent);outline-offset:-1px}
+.day.today span{color:var(--accent)}
+.avail b.today{background:var(--accent);color:var(--bg)}
+
+/* ---------- Booking pop-up ---------- */
+.b-box{display:block!important;max-width:760px;padding:30px 30px 22px;text-align:center}
+.b-head h3{font-size:30px;margin:2px 0 4px}
+.b-cal{position:relative;margin-top:20px;border:1px solid var(--line);background:#fff;height:min(680px,calc(100vh - 290px));min-height:420px}
+.b-cal iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.b-loading{position:absolute;inset:0;display:grid;place-items:center;font:12px system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#6a645b}
+.b-fallback{margin-top:14px}
+.b-fallback a{color:var(--accent)}
+@media (max-width:700px){.b-box{padding:24px 14px 18px}.b-cal{height:calc(100vh - 250px)}}
+
+/* ---------- Print pop-up ---------- */
+.modal{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:20px}
+.modal[hidden]{display:none}
+.m-back{position:absolute;inset:0;background:color-mix(in srgb,#0d0c0a 82%,transparent);backdrop-filter:blur(6px)}
+.m-box{position:relative;background:var(--bg);border:1px solid var(--line);max-width:860px;width:100%;max-height:calc(100vh - 40px);overflow:auto;display:grid;grid-template-columns:1fr 1fr;gap:34px;padding:38px;text-align:left}
+.m-frame{align-self:start}
+.m-info h3{font-size:34px;line-height:1.1;margin:4px 0 6px}
+.m-line:empty{display:none}
+.m-line{font-size:18px;color:var(--fg);margin:16px 0}
+.m-story{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:16px 0;margin:0 0 18px}
+.m-story .eyebrow{text-align:left}
+.story-text{margin:0;color:var(--fg);font-size:17px;line-height:1.6}
+.todo-text{margin:0;color:var(--muted);font-style:italic}
+.m-x{position:absolute;top:12px;right:12px;background:none;border:1px solid var(--line);color:var(--fg);width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:14px}
+.m-x:hover{border-color:var(--accent);color:var(--accent)}
+@media (prefers-reduced-motion:no-preference){
+  .modal:not([hidden]) .m-box{animation:pop .45s cubic-bezier(.2,.8,.2,1)}
+  .modal:not([hidden]) .m-back{animation:fade .35s ease}
+  @keyframes pop{from{opacity:.001;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
+  @keyframes fade{from{opacity:.001}to{opacity:1}}
+}
+@media (max-width:700px){.m-box{grid-template-columns:1fr;padding:26px 20px;gap:22px}.m-frame{max-width:300px;margin:0 auto;width:100%}}
+
+@media (max-width:760px){
+  .options{grid-template-columns:1fr}
+  .grid{grid-template-columns:1fr 1fr}
+}
+@media (max-width:480px){
+  .grid{grid-template-columns:1fr}
+  .days{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div id="intro" aria-hidden="true" hidden>
+  <div class="in">
+    <svg id="bloom" viewBox="-70 -70 140 140">
+      <path d="M0 0 C 18 -22, 18 -46, 0 -62 C -18 -46, -18 -22, 0 0"/>
+      <path d="M0 0 C 18 -22, 18 -46, 0 -62 C -18 -46, -18 -22, 0 0" transform="rotate(60)"/>
+      <path d="M0 0 C 18 -22, 18 -46, 0 -62 C -18 -46, -18 -22, 0 0" transform="rotate(120)"/>
+      <path d="M0 0 C 18 -22, 18 -46, 0 -62 C -18 -46, -18 -22, 0 0" transform="rotate(180)"/>
+      <path d="M0 0 C 18 -22, 18 -46, 0 -62 C -18 -46, -18 -22, 0 0" transform="rotate(240)"/>
+      <path d="M0 0 C 18 -22, 18 -46, 0 -62 C -18 -46, -18 -22, 0 0" transform="rotate(300)"/>
+      <circle r="3"/>
+    </svg>
+    <div class="word" id="introWord"></div>
+    <div class="sub" id="introSub">Dance ✳ Art ✳ Tarot</div>
+  </div>
+  <button id="skip" type="button">Enter ↗</button>
+</div>
+<div class="cur-ring" aria-hidden="true"></div><div class="cur-dot" aria-hidden="true"></div><div class="glow" aria-hidden="true"></div>
+<div class="top">Dance ✳ Art ✳ Tarot · Washington, DC</div>
+<div class="wrap">
+<nav id="top">
+  <div class="logo">VOW &amp; VENOM</div>
+  <a href="#dance">Dance</a><a href="#prints">Prints</a><a href="#tarot">Tarot</a><a href="#connect">Connect</a>
+</nav>
+
+<div class="hero">
+  <canvas id="vines" aria-hidden="true"></canvas>
+  <div class="eyebrow">Creative House / Leena / Iris in Time</div>
+  <h1>Vow <em>&amp;</em> Venom</h1>
+  <p class="lede">Dance, art, and tarot. Book Leena for a private dance, take home a fine art print from Iris in Time, or sit down for a reading.</p>
+  <div class="btns"><a class="btn" href="#tarot">Book a reading ↗</a><a class="btn alt" href="#prints">Shop prints ↗</a><a class="btn alt" href="#dance">Book a dance ↗</a></div>
+  <a class="status" id="status" href="#dance" hidden><i></i><span></span></a>
+</div>
+
+<section id="dance">
+  <div class="eyebrow">01 / Leena</div>
+  <h2>Dance</h2>
+  <p class="p">Catch me live at the club three nights a week, or book ahead so your night is set before you walk in.</p>
+  <div class="days">
+    <div class="day"><b>Wednesday</b><span>At the club</span></div>
+    <div class="day"><b>Friday</b><span>At the club</span></div>
+    <div class="day"><b>Saturday</b><span>At the club</span></div>
+  </div>
+  <div class="options">
+    <div class="option">
+      <h3>Private dance</h3>
+      <p>One-on-one, booked ahead for a night I'm in.</p>
+      <button class="btn" type="button" data-calendly="https://calendly.com/kressleinzuri/private-dance" data-who="Book with Leena" data-title="Private dance" data-note="Pick a time and pay securely right here. We'll set the details together after you book.">Book a private dance ↗</button>
+    </div>
+    <div class="option">
+      <h3>A room at the club</h3>
+      <p>Reserve a room for you and your people.</p>
+      <button class="btn" type="button" data-calendly="https://calendly.com/kressleinzuri/book-a-room-at-millstream" data-who="Book with Leena" data-title="A room at the club" data-note="Pick a time and pay securely right here. We'll set the details together after you book.">Book a room ↗</button>
+    </div>
+  </div>
+</section>
+
+<section id="prints">
+  <div class="eyebrow">02 / Iris in Time</div>
+  <h2>Fine Art Prints</h2>
+  <p class="p">Each piece is printed to order in A4 and shipped to you. More pieces are coming to the collection soon.</p>
+  <div class="grid">
+    <div class="print" data-story="The fox is a guide of natural grace and fierceness: the fierceness it takes to navigate violence and balance all of the change in the world. To self-heal, and find within the answers that were needed." data-n="001" data-art="assets/fox-spirit.jpg" data-shop="https://irisintime.myshopify.com/products/fox-spirit">
+      <button class="print-link" type="button" aria-label="Open Fox Spirit">
+      <div class="frame"><div class="art"><img src="assets/fox-spirit.jpg" alt="Fox Spirit, fine art print by Iris in Time" loading="lazy"></div></div>
+      <div class="tag">Print 001 / A4</div><h3>Fox Spirit</h3><div class="price-line">$500</div>
+      <p>Intuition and change, with the fox as a guide through it.</p>
+    </button>
+      <div class="print-actions"><a class="btn" href="https://irisintime.myshopify.com/products/fox-spirit" target="_blank" rel="noopener">Buy this print ↗</a><button class="story-btn" type="button">Read the story ✳</button></div>
+    </div>
+    <div class="print" data-story="It was about returning to a graceful perception of myself when I looked in the mirror, and being able to allow my self-image to be one of my own design, rather than letting other people tell me who I was." data-n="002" data-art="assets/midnight-mandala.jpg" data-shop="https://irisintime.myshopify.com/products/midnight-mandala">
+      <button class="print-link" type="button" aria-label="Open Midnight Mandala">
+      <div class="frame"><div class="art"><img src="assets/midnight-mandala.jpg" alt="Midnight Mandala, fine art print by Iris in Time" loading="lazy"></div></div>
+      <div class="tag">Print 002 / A4</div><h3>Midnight Mandala</h3><div class="price-line">$500</div>
+      <p>A midnight session of self-reflection and beauty.</p>
+    </button>
+      <div class="print-actions"><a class="btn" href="https://irisintime.myshopify.com/products/midnight-mandala" target="_blank" rel="noopener">Buy this print ↗</a><button class="story-btn" type="button">Read the story ✳</button></div>
+    </div>
+    <div class="print" data-story="Totem was progression, laying down the tracks for success and forward momentum, which ignited a resilience in my determination." data-n="003" data-art="assets/totem.jpg" data-shop="https://irisintime.myshopify.com/products/totem">
+      <button class="print-link" type="button" aria-label="Open Totem">
+      <div class="frame"><div class="art"><img src="assets/totem.jpg" alt="Totem, fine art print by Iris in Time" loading="lazy"></div></div>
+      <div class="tag">Print 003 / A4</div><h3>Totem</h3><div class="price-line">$500</div>
+      <p>Progression, laying the tracks for success, and forward momentum.</p>
+    </button>
+      <div class="print-actions"><a class="btn" href="https://irisintime.myshopify.com/products/totem" target="_blank" rel="noopener">Buy this print ↗</a><button class="story-btn" type="button">Read the story ✳</button></div>
+    </div>
+    <div class="print" data-story="As above, so below means that balancing work and life can be extremely difficult, almost a splitting of the two worlds. However, how you feel when you are up can reflect how you feel when you are down. Within both worlds, the beautiful things in life as well as the suffering, there is much to cherish, and a lot to create." data-n="004" data-art="assets/as-above-so-below.jpg" data-shop="https://irisintime.myshopify.com/products/as-above-so-below">
+      <button class="print-link" type="button" aria-label="Open As above, so below"><div class="frame"><div class="art"><img src="assets/as-above-so-below.jpg" alt="As above, so below, fine art print by Iris in Time" loading="lazy"></div></div>
+      <div class="tag">Print 004 / A4</div><h3>As above, so below</h3><div class="price-line">$500</div>
+      <p>Within both worlds, there is much to cherish and a lot to create.</p>
+    </button>
+      <div class="print-actions"><a class="btn" href="https://irisintime.myshopify.com/products/as-above-so-below" target="_blank" rel="noopener">Buy this print ↗</a><button class="story-btn" type="button">Read the story ✳</button></div>
+    </div>
+  </div>
+  <div class="eyebrow">Printed to order · Ships to you</div>
+  <a class="btn" href="https://irisintime.myshopify.com" target="_blank" rel="noopener">See the full shop ↗</a>
+</section>
+
+<section id="tarot">
+  <div class="eyebrow">03 / Iris</div>
+  <h2>Tarot Readings</h2>
+  <p class="p">Live readings over Google Meet, or in person at the club on the nights I'm there. Pick your spread, pick your time, and pay when you book.</p>
+  <div class="reading">
+    <div class="price">Choose your spread</div>
+    <ul class="spreads">
+      <li><div>Three-card spread <em class="sp-price">$50</em><span>Past, present, future</span></div>
+        <div class="book"><button class="btn" type="button" data-calendly="https://calendly.com/kressleinzuri/3-card-spread-tarot-reading" data-title="Three-card reading" data-price="$50">Book ↗</button></div></li>
+      <li><div>Celtic Cross <em class="sp-price">$100</em><span>The full picture</span></div>
+        <div class="book"><button class="btn" type="button" data-calendly="https://calendly.com/kressleinzuri/celtic-spread-tarot-reading" data-title="Celtic Cross reading" data-price="$100">Book ↗</button></div></li>
+    </ul>
+    <div class="avail"><b>Monday – Saturday</b></div>
+    <div class="small">Open times are shown when you book. Virtual readings get a Google Meet link by email as soon as you book.</div>
+  </div>
+</section>
+
+<footer id="connect">
+  <div class="logo" style="font:700 22px/1.1 system-ui,sans-serif;letter-spacing:.3em">VOW &amp;<br>VENOM</div>
+  <div class="small">Creative House · Washington, DC</div>
+  <div class="fl">
+    <a href="https://instagram.com/irisintime_" target="_blank" rel="noopener">@irisintime_ ↗</a>
+    <a href="https://instagram.com/leenacherrywinkz" target="_blank" rel="noopener">@leenacherrywinkz ↗</a>
+    <a href="#top">Back to top ↑</a>
+    <a href="#top" id="replay">Replay intro ↺</a>
+  </div>
+  <div class="small">© 2026 Vow &amp; Venom Creative House</div>
+</footer>
+</div>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle" hidden>
+  <div class="m-back" data-close></div>
+  <div class="m-box">
+    <button class="m-x" type="button" data-close aria-label="Close">✕</button>
+    <div class="frame m-frame"><div class="art" id="mArt"><img alt=""></div></div>
+    <div class="m-info">
+      <div class="tag" id="mTag"></div>
+      <h3 id="mTitle"></h3>
+      <div class="price-line" id="mPrice"></div>
+      <p class="m-line" id="mLine"></p>
+      <div class="m-story">
+        <div class="eyebrow" style="margin:0 0 8px">The story</div>
+        <p id="mStory" class="story-text"></p>
+      </div>
+      <div class="small" style="margin:0 0 18px">A4 fine art print · printed to order · ships to you</div>
+      <a class="btn" id="mBuy" href="#" target="_blank" rel="noopener">Buy this print ↗</a>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="bookModal" role="dialog" aria-modal="true" aria-labelledby="bTitle" hidden>
+  <div class="m-back" data-bclose></div>
+  <div class="m-box b-box">
+    <button class="m-x" type="button" data-bclose aria-label="Close">✕</button>
+    <div class="b-head">
+      <div class="eyebrow" style="margin:0 0 6px" id="bWho">Book with Iris</div>
+      <h3 id="bTitle">Tarot reading</h3>
+      <div class="price-line" id="bPrice"></div>
+      <p class="small" style="margin:10px 0 0" id="bNote">Pick a time and pay securely right here. Your Google Meet link arrives by email as soon as you book.</p>
+    </div>
+    <div class="b-cal">
+      <div class="b-loading">Loading the calendar…</div>
+      <iframe id="bFrame" title="Booking calendar" loading="lazy"></iframe>
+    </div>
+    <div class="small b-fallback">Calendar not showing? <a id="bOpen" href="#" target="_blank" rel="noopener">Open booking in a new tab ↗</a></div>
+  </div>
+</div>
+
+<template id="orn"><svg class="orn" viewBox="0 0 260 30" aria-hidden="true">
+  <path d="M10 15 H96 M164 15 H250"/>
+  <path d="M96 15 C 90 5, 78 5, 74 12 C 71 18, 79 21, 82 16"/>
+  <path d="M164 15 C 170 25, 182 25, 186 18 C 189 12, 181 9, 178 14"/>
+  <path d="M40 15 C 44 8, 52 8, 54 13 M220 15 C 216 22, 208 22, 206 17"/>
+  <g transform="translate(130 15)">
+    <path d="M0 0 C 5 -6, 5 -12, 0 -14 C -5 -12, -5 -6, 0 0"/>
+    <path d="M0 0 C 5 -6, 5 -12, 0 -14 C -5 -12, -5 -6, 0 0" transform="rotate(72)"/>
+    <path d="M0 0 C 5 -6, 5 -12, 0 -14 C -5 -12, -5 -6, 0 0" transform="rotate(144)"/>
+    <path d="M0 0 C 5 -6, 5 -12, 0 -14 C -5 -12, -5 -6, 0 0" transform="rotate(216)"/>
+    <path d="M0 0 C 5 -6, 5 -12, 0 -14 C -5 -12, -5 -6, 0 0" transform="rotate(288)"/>
+    <circle r="1.8"/>
+  </g>
+  <circle cx="10" cy="15" r="1.6"/><circle cx="250" cy="15" r="1.6"/>
+</svg></template>
+<script>
+(function(){
+var root=document.documentElement;root.classList.add('js');
+var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+var fine=matchMedia('(pointer: fine)').matches;
+var GLYPHS='▓▒░<>/\\=+*#%✳01';
+
+/* Scramble text into place (the "decoding" flair) */
+function scramble(el,text,dur,done){
+  if(reduce){el.textContent=text;done&&done();return}
+  var start=null;
+  function frame(t){
+    if(!start)start=t;
+    var p=Math.min((t-start)/dur,1),n=Math.floor(p*text.length),out='';
+    for(var i=0;i<text.length;i++){
+      out+= i<n||text[i]===' ' ? text[i] : GLYPHS[Math.random()*GLYPHS.length|0];
+    }
+    el.textContent=out;
+    if(p<1)requestAnimationFrame(frame);else{el.textContent=text;done&&done()}
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ---------- Intro (once per visit) ---------- */
+var intro=document.getElementById('intro'),seen=false;
+try{seen=sessionStorage.getItem('vv-intro')==='1'}catch(e){}
+function ready(){root.classList.add('ready')}
+var run=0,timers=[];
+function later(fn,ms){timers.push(setTimeout(fn,ms))}
+function closeIntro(){
+  if(intro.hidden||intro.classList.contains('gone'))return;
+  timers.forEach(clearTimeout);timers=[];run++;
+  intro.classList.add('gone');ready();
+  try{sessionStorage.setItem('vv-intro','1')}catch(e){}
+  later(function(){intro.hidden=true},1200);
+}
+function playIntro(){
+  timers.forEach(clearTimeout);timers=[];
+  var me=++run;
+  /* reset: show instantly, restart the bloom drawing */
+  intro.style.transition='none';intro.classList.remove('gone');intro.hidden=false;
+  void intro.offsetWidth;intro.style.transition='';
+  var svg=document.getElementById('bloom');svg.parentNode.replaceChild(svg.cloneNode(true),svg);
+  var word=document.getElementById('introWord'),sub=document.getElementById('introSub');
+  word.textContent='';sub.classList.remove('on');
+  later(function(){
+    scramble(word,'VOW & VENOM',1300,function(){
+      if(me!==run)return;
+      sub.classList.add('on');
+      later(closeIntro,1300);
+    });
+  },700);
+  later(closeIntro,6000); /* never trap anyone */
+}
+document.getElementById('skip').addEventListener('click',function(e){e.stopPropagation();closeIntro()});
+intro.addEventListener('click',closeIntro);
+addEventListener('keydown',function(e){if(!intro.hidden&&(e.key==='Escape'||e.key==='Enter'))closeIntro()});
+document.getElementById('replay').addEventListener('click',function(e){
+  e.preventDefault();
+  scrollTo({top:0,behavior:'instant'});
+  playIntro();
+});
+if(seen||reduce){ready()}else{playIntro()}
+
+/* ---------- Custom cursor + glow ---------- */
+var mx=-200,my=-200;
+if(fine&&!reduce){
+  var dot=document.querySelector('.cur-dot'),ring=document.querySelector('.cur-ring'),glow=document.querySelector('.glow');
+  var rx=mx,ry=my,gx=mx,gy=my;
+  addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;root.classList.add('has-cursor')});
+  document.addEventListener('mouseleave',function(){root.classList.remove('has-cursor')});
+  document.querySelectorAll('a,button').forEach(function(a){
+    a.addEventListener('mouseenter',function(){ring.classList.add('big')});
+    a.addEventListener('mouseleave',function(){ring.classList.remove('big')});
+  });
+  (function loop(){
+    rx+=(mx-rx)*.18;ry+=(my-ry)*.18;gx+=(mx-gx)*.06;gy+=(my-gy)*.06;
+    dot.style.transform='translate('+mx+'px,'+my+'px)';
+    ring.style.transform='translate('+rx+'px,'+ry+'px)';
+    glow.style.transform='translate('+gx+'px,'+gy+'px)';
+    requestAnimationFrame(loop);
+  })();
+
+  /* Prints tilt toward the cursor */
+  document.querySelectorAll('.print').forEach(function(p){
+    var f=p.querySelector('.frame');
+    p.addEventListener('mousemove',function(e){
+      var r=p.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+      f.style.transform='perspective(800px) rotateY('+(x*8)+'deg) rotateX('+(-y*8)+'deg) translateY(-3px)';
+    });
+    p.addEventListener('mouseleave',function(){f.style.transform=''});
+  });
+}
+
+/* ---------- Hero vines: slow growing lines that lean toward the cursor ---------- */
+var cv=document.getElementById('vines');
+if(cv&&!reduce&&cv.getContext){
+  var ctx=cv.getContext('2d'),hero=cv.parentNode,W,H,dpr=Math.min(devicePixelRatio||1,2),tips=[];
+  function size(){W=hero.offsetWidth;H=hero.offsetHeight;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);tips=[];
+    for(var i=0;i<7;i++)tips.push({x:Math.random()*W,y:H+4,a:-Math.PI/2+(Math.random()-.5)*.6,life:260+Math.random()*260});}
+  size();addEventListener('resize',size);
+  var accent=getComputedStyle(root).getPropertyValue('--accent').trim()||'#9a7a2c';
+  (function grow(){
+    var r=hero.getBoundingClientRect(),lx=mx-r.left,ly=my-r.top;
+    tips.forEach(function(t){
+      if(t.life<=0)return;
+      var dx=lx-t.x,dy=ly-t.y,d=Math.hypot(dx,dy);
+      if(d<260){var want=Math.atan2(dy,dx),diff=Math.atan2(Math.sin(want-t.a),Math.cos(want-t.a));t.a+=diff*.03}
+      t.a+=(Math.random()-.5)*.14;
+      var nx=t.x+Math.cos(t.a)*1.4,ny=t.y+Math.sin(t.a)*1.4;
+      ctx.strokeStyle=accent;ctx.globalAlpha=.35;ctx.lineWidth=.8;
+      ctx.beginPath();ctx.moveTo(t.x,t.y);ctx.lineTo(nx,ny);ctx.stroke();
+      if(Math.random()<.012){ctx.globalAlpha=.5;ctx.fillStyle=accent;ctx.beginPath();ctx.arc(nx,ny,1.6,0,7);ctx.fill();}
+      if(Math.random()<.006&&tips.length<40)tips.push({x:nx,y:ny,a:t.a+(Math.random()<.5?-.7:.7),life:t.life*.6});
+      t.x=nx;t.y=ny;t.life--;
+    });
+    requestAnimationFrame(grow);
+  })();
+}
+
+/* ---------- Gold ornaments above each section ---------- */
+var tpl=document.getElementById('orn');
+document.querySelectorAll('section, footer').forEach(function(sec){
+  sec.insertBefore(tpl.content.firstElementChild.cloneNode(true),sec.firstChild);
+});
+
+/* ---------- Tonight status (Washington, DC time) ---------- */
+(function(){
+  var day;
+  try{day=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',weekday:'long'}).format(new Date())}
+  catch(e){day=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()]}
+  var st=document.getElementById('status'),txt=st.querySelector('span');
+  if(['Wednesday','Friday','Saturday'].indexOf(day)>-1){
+    st.classList.add('live');st.href='#dance';txt.textContent='Leena is dancing tonight';
+  }else if(['Monday','Tuesday','Thursday'].indexOf(day)>-1){
+    st.classList.add('live');st.href='#tarot';txt.textContent='Tarot readings open today';
+  }else{
+    st.classList.add('off');st.href='#tarot';txt.textContent='Closed Sundays · Readings open Monday';
+  }
+  st.hidden=false;
+  document.querySelectorAll('.day b, .avail b').forEach(function(b){
+    if(b.firstChild&&b.firstChild.textContent.trim()===day)(b.closest('.day')||b).classList.add('today');
+  });
+})();
+
+/* ---------- Print pop-up ---------- */
+(function(){
+  var modal=document.getElementById('modal'),last=null;
+  var art=document.getElementById('mArt');
+  function open(p){
+    last=p;
+    var im=art.querySelector('img');im.src=p.dataset.art;im.alt=p.querySelector('img').alt;
+    document.getElementById('mTag').textContent='Print '+p.dataset.n+' / A4';
+    document.getElementById('mTitle').textContent=p.querySelector('h3').textContent;
+    document.getElementById('mPrice').textContent=p.querySelector('.price-line').textContent;
+    document.getElementById('mLine').textContent=p.querySelector('p').textContent;
+    var st=document.getElementById('mStory');
+    st.textContent=p.dataset.story||'';st.className='story-text';
+    st.closest('.m-story').hidden=!p.dataset.story;
+    document.getElementById('mBuy').href=p.dataset.shop;
+    modal.hidden=false;document.body.style.overflow='hidden';
+    modal.querySelector('.m-x').focus();
+  }
+  function close(){
+    if(modal.hidden)return;
+    modal.hidden=true;document.body.style.overflow='';
+    var ring=document.querySelector('.cur-ring');ring&&ring.classList.remove('big');
+    last&&last.querySelector('.print-link').focus();
+  }
+  document.querySelectorAll('.print').forEach(function(p){
+    if(!p.dataset.story)p.querySelector('.story-btn').hidden=true; /* no story yet: hide the link */
+    p.querySelector('.story-btn').addEventListener('click',function(){open(p)});
+    /* clicking the artwork or title opens the pop-up; Buy buttons still go to Shopify */
+    p.querySelector('.print-link').addEventListener('click',function(){open(p)});
+  });
+  modal.querySelectorAll('[data-close]').forEach(function(b){b.addEventListener('click',close)});
+  addEventListener('keydown',function(e){
+    if(modal.hidden)return;
+    if(e.key==='Escape')close();
+    if(e.key==='Tab'){ /* keep focus inside the pop-up */
+      var f=modal.querySelectorAll('button,a[href]'),a=f[0],z=f[f.length-1];
+      if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus()}
+      else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus()}
+    }
+  });
+})();
+
+/* ---------- Booking pop-up with Calendly inside ---------- */
+(function(){
+  var m=document.getElementById('bookModal'),fr=document.getElementById('bFrame'),last=null;
+  function open(btn){
+    last=btn;
+    var url=btn.dataset.calendly;
+    document.getElementById('bTitle').textContent=btn.dataset.title||'Tarot reading';
+    document.getElementById('bPrice').textContent=btn.dataset.price||'';
+    document.getElementById('bWho').textContent=btn.dataset.who||'Book with Iris';
+    document.getElementById('bNote').textContent=btn.dataset.note||'Pick a time and pay securely right here. Virtual readings get a Google Meet link by email as soon as you book.';
+    document.getElementById('bOpen').href=url;
+    var embed=url+(url.indexOf('?')>-1?'&':'?')+'embed_type=Inline&embed_domain='+encodeURIComponent(location.hostname||'vowandvenom.com')+'&hide_gdpr_banner=1&primary_color=9a7a2c';
+    if(fr.dataset.src!==embed){fr.dataset.src=embed;fr.src=embed}
+    m.hidden=false;document.body.style.overflow='hidden';
+    m.querySelector('.m-x').focus();
+  }
+  function close(){
+    if(m.hidden)return;
+    m.hidden=true;document.body.style.overflow='';
+    var ring=document.querySelector('.cur-ring');ring&&ring.classList.remove('big');
+    last&&last.focus();
+  }
+  document.querySelectorAll('[data-calendly]').forEach(function(b){
+    b.addEventListener('click',function(){open(b)});
+  });
+  m.querySelectorAll('[data-bclose]').forEach(function(b){b.addEventListener('click',close)});
+  addEventListener('keydown',function(e){if(!m.hidden&&e.key==='Escape')close()});
+})();
+
+/* ---------- Reveal on scroll + eyebrow decode ---------- */
+var items=document.querySelectorAll('section>*, footer>*');
+if('IntersectionObserver' in window&&!reduce){
+  items.forEach(function(el){el.classList.add('reveal')});
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){
+    if(!e.isIntersecting)return;
+    e.target.classList.add('seen');
+    if(e.target.classList.contains('eyebrow')&&!e.target.dataset.done){e.target.dataset.done=1;scramble(e.target,e.target.textContent,700)}
+    io.unobserve(e.target);
+  })},{threshold:.15,rootMargin:'0px 0px -40px 0px'});
+  items.forEach(function(el){io.observe(el)});
+}
+})();
+</script>
+</body>
+</html>
